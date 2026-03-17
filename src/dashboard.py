@@ -55,6 +55,49 @@ st.markdown("""
         background: #f8d7da; border-radius: 8px; padding: 12px;
         border-left: 4px solid #dc3545; margin-bottom: 8px;
     }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+        .main-header { font-size: 1.6rem; }
+        /* Stack Streamlit columns vertically on mobile */
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap;
+        }
+        [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+        }
+        /* Compact metrics */
+        [data-testid="stMetric"] {
+            padding: 8px 0;
+        }
+        /* Smaller tab text */
+        [data-testid="stTabs"] button {
+            font-size: 0.85rem;
+            padding: 8px 10px;
+        }
+        /* Scrollable tables */
+        [data-testid="stDataFrame"] {
+            overflow-x: auto;
+        }
+        /* Cards */
+        .edge-positive, .edge-negative {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        .demo-banner {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+    }
+    @media (max-width: 480px) {
+        .main-header { font-size: 1.3rem; }
+        [data-testid="stTabs"] button {
+            font-size: 0.75rem;
+            padding: 6px 6px;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -540,23 +583,19 @@ def render_history_tab():
 def render_model_stats(metrics: dict, winner_model, feature_cols):
     st.markdown("### Model Performance")
 
-    col1, col2 = st.columns(2)
+    st.markdown("#### Winner Model (Validation)")
+    wm = metrics.get("winner", {})
+    w1, w2, w3 = st.columns(3)
+    w1.metric("Accuracy", f"{wm.get('accuracy', 0):.1%}",
+              delta=f"{(wm.get('accuracy', 0) - 0.58) * 100:+.1f}% vs home baseline")
+    w2.metric("AUC-ROC", f"{wm.get('auc_roc', 0):.3f}")
+    w3.metric("Log Loss", f"{wm.get('log_loss', 0):.3f}")
 
-    with col1:
-        st.markdown("#### Winner Model (Validation)")
-        wm = metrics.get("winner", {})
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Accuracy", f"{wm.get('accuracy', 0):.1%}",
-                   delta=f"{(wm.get('accuracy', 0) - 0.58) * 100:+.1f}% vs home baseline")
-        c2.metric("AUC-ROC", f"{wm.get('auc_roc', 0):.3f}")
-        c3.metric("Log Loss", f"{wm.get('log_loss', 0):.3f}")
-
-    with col2:
-        st.markdown("#### Spread Model (Validation)")
-        sm = metrics.get("spread", {})
-        c1, c2 = st.columns(2)
-        c1.metric("MAE", f"{sm.get('mae', 0):.1f} pts")
-        c2.metric("RMSE", f"{sm.get('rmse', 0):.1f} pts")
+    st.markdown("#### Spread Model (Validation)")
+    sm = metrics.get("spread", {})
+    s1, s2 = st.columns(2)
+    s1.metric("MAE", f"{sm.get('mae', 0):.1f} pts")
+    s2.metric("RMSE", f"{sm.get('rmse', 0):.1f} pts")
 
     # Feature importance
     st.markdown("#### Top Features")
