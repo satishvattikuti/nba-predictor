@@ -63,19 +63,28 @@ st.markdown("""
 
 @st.cache_data(ttl=1800)
 def load_all_data():
+    from src.ingest import fetch_team_game_logs, fetch_advanced_team_stats, fetch_today_schedule
+
     config = load_config()
     cache_dir = PROJECT_ROOT / config["cache_dir"]
+    cache_dir.mkdir(parents=True, exist_ok=True)
 
     winner_model, spread_model, feature_cols, metrics = load_models()
 
-    # Load current season game logs for today's features
-    current = config["current_season"].replace("-", "_")
-    game_logs = pd.read_parquet(cache_dir / f"game_logs_{current}.parquet")
+    # Load current season game logs (fetch if missing)
+    current = config["current_season"]
+    current_key = current.replace("-", "_")
+    log_path = cache_dir / f"game_logs_{current_key}.parquet"
+    if not log_path.exists():
+        fetch_team_game_logs(current, cache_dir)
+    game_logs = pd.read_parquet(log_path)
 
-    adv_path = cache_dir / f"team_advanced_{current}.parquet"
+    adv_path = cache_dir / f"team_advanced_{current_key}.parquet"
+    if not adv_path.exists():
+        fetch_advanced_team_stats(current, cache_dir)
     adv_stats = pd.read_parquet(adv_path) if adv_path.exists() else None
 
-    today_schedule = pd.read_csv(cache_dir / "today_schedule.csv")
+    today_schedule = fetch_today_schedule(cache_dir)
 
     # Build features for today
     today_features = build_today_features(today_schedule, game_logs, adv_stats)
