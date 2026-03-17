@@ -1,0 +1,61 @@
+prediction_date,home_team,away_team,matchup,home_win_prob,away_win_prob,predicted_winner,confidence,predicted_margin,home_ml,away_ml,spread,over_under,home_implied_prob,away_implied_prob,edge,spread_diff,is_demo,actual_winner,home_score,away_score,actual_margin,pick_correct,spread_lean,spread_cover_correct
+2026-03-14,PHI,BKN,Nets @ 76ers,0.5972,0.4028,PHI,0.1944,1.83,,,,,,,,,False,PHI,104.0,97.0,7.0,1.0,,
+2026-03-14,ATL,MIL,Bucks @ Hawks,0.614,0.386,ATL,0.2281,7.01,,,,,,,,,False,ATL,122.0,99.0,23.0,1.0,,
+2026-03-14,SAS,CHA,Hornets @ Spurs,0.4994,0.5006,CHA,0.0012,-3.78,,,,,,,,,False,SAS,115.0,102.0,13.0,0.0,,
+2026-03-14,BOS,WAS,Wizards @ Celtics,0.6456,0.3544,BOS,0.2911,4.14,,,-20.5,233.5,,,,-16.36,False,BOS,111.0,100.0,11.0,1.0,Away,1.0
+2026-03-14,MIA,ORL,Magic @ Heat,0.5321,0.4679,MIA,0.0643,-0.93,,,-4.5,237.5,,,,-5.43,False,ORL,117.0,121.0,-4.0,0.0,Away,1.0
+2026-03-14,LAL,DEN,Nuggets @ Lakers,0.5371,0.4629,LAL,0.0742,1.64,,,2.5,244.5,,,,4.14,False,LAL,127.0,125.0,2.0,1.0,Home,1.0
+2026-03-14,LAC,SAC,Kings @ Clippers,0.5319,0.4681,LAC,0.0639,1.59,,,-13.5,232.5,,,,-11.91,False,SAC,109.0,118.0,-9.0,0.0,Away,1.0
+2026-03-13,DET,MEM,Grizzlies @ Pistons,0.5597,0.4403,DET,0.1194,2.18,,,,,,,,,False,DET,126.0,110.0,16.0,1.0,,
+2026-03-13,IND,NYK,Knicks @ Pacers,0.4254,0.5746,NYK,0.1491,-0.34,,,,,,,,,False,NYK,92.0,101.0,-9.0,1.0,,
+2026-03-13,TOR,PHX,Suns @ Raptors,0.5344,0.4656,TOR,0.0689,-0.38,,,,,,,,,False,TOR,122.0,115.0,7.0,1.0,,
+2026-03-13,DAL,CLE,Cavaliers @ Mavericks,0.5304,0.4696,DAL,0.0608,-1.66,,,,,,,,,False,CLE,105.0,138.0,-33.0,0.0,,
+2026-03-13,HOU,NOP,Pelicans @ Rockets,0.496,0.504,NOP,0.0079,-1.36,,,,,,,,,False,HOU,107.0,105.0,2.0,0.0,,
+2026-03-13,GSW,MIN,Timberwolves @ Warriors,0.5483,0.4517,GSW,0.0967,0.06,,,,,,,,,False,MIN,117.0,127.0,-10.0,0.0,,
+2026-03-13,POR,UTA,Jazz @ Trail Blazers,0.5994,0.4006,POR,0.1988,2.84,,,,,,,,,False,POR,124.0,114.0,10.0,1.0,,
+2026-03-13,LAC,CHI,Bulls @ Clippers,0.5741,0.4259,LAC,0.1483,2.1,,,,,,,,,False,LAC,119.0,108.0,11.0,1.0,,
+2026-03-15,PHI,BKN,Nets @ 76ers,0.6375,0.3625,PHI,0.2749,6.1,,,,,,,,,False,,,,,,,
+2026-03-15,ATL,MIL,Bucks @ Hawks,0.679,0.321,ATL,0.358,5.1,,,,,,,,,False,,,,,,,
+2026-03-15,SAS,CHA,Hornets @ Spurs,0.5498,0.4502,SAS,0.0996,0.29,,,,,,,,,False,,,,,,,
+2026-03-15,BOS,WAS,Wizards @ Celtics,0.7568,0.2432,BOS,0.5136,4.09,,,,,,,,,False,,,,,,,
+2026-03-15,MIA,ORL,Magic @ Heat,0.5872,0.4128,MIA,0.1744,1.36,,,,,,,,,False,,,,,,,
+2026-03-15,LAL,DEN,Nuggets @ Lakers,0.5889,0.4111,LAL,0.1779,3.84,,,,,,,,,False,,,,,,,
+2026-03-15,LAC,SAC,Kings @ Clippers,0.7352,0.2648,LAC,0.4704,8.41,,,,,,,,,False,,,,,,,
+2026-03-15,OKC,MIN,Timberwolves @ Thunder,0.5862,0.4138,OKC,0.1725,0.16,,,,,,,,,False,OKC,116.0,103.0,13.0,1.0,,
+2026-03-15,CLE,DAL,Mavericks @ Cavaliers,0.7569,0.2431,CLE,0.5139,6.17,,,-15.5,235.5,,,,-9.33,False,DAL,120.0,130.0,-10.0,0.0,Away,1.0
+2026-03-15,TOR,DET,Pistons @ Raptors,0.552,0.448,TOR,0.104,-0.39,,,3.5,224.5,,,,3.11,False,TOR,119.0,108.0,11.0,1.0,Home,1.0
+2026-03-15,MIL,IND,Pacers @ Bucks,0.5664,0.4336,MIL,0.1329,5.57,,,-8.5,229.5,,,,-2.93,False,MIL,134.0,123.0,11.0,1.0,Away,0.0
+2026-03-15,PHI,POR,Trail Blazers @ 76ers,0.6153,0.3847,PHI,0.2307,0.22,,,8.5,228.5,,,,8.72,False,PHI,109.0,103.0,6.0,1.0,Home,1.0
+2026-03-15,NYK,GSW,Warriors @ Knicks,0.6448,0.3552,NYK,0.2895,1.79,,,-13.5,219.5,,,,-11.71,False,NYK,110.0,107.0,3.0,1.0,Away,1.0
+2026-03-15,SAC,UTA,Jazz @ Kings,0.4636,0.5364,UTA,0.0728,1.19,,,-3.5,232.5,,,,-2.31,False,SAC,116.0,111.0,5.0,0.0,Away,0.0
+2026-03-16,OKC,MIN,Timberwolves @ Thunder,0.5862,0.4138,OKC,0.1725,0.16,,,,,,,,,False,,,,,,,
+2026-03-16,CLE,DAL,Mavericks @ Cavaliers,0.7569,0.2431,CLE,0.5139,6.17,,,,,,,,,False,,,,,,,
+2026-03-16,TOR,DET,Pistons @ Raptors,0.552,0.448,TOR,0.104,-0.39,,,,,,,,,False,,,,,,,
+2026-03-16,MIL,IND,Pacers @ Bucks,0.5664,0.4336,MIL,0.1329,5.57,,,,,,,,,False,,,,,,,
+2026-03-16,PHI,POR,Trail Blazers @ 76ers,0.6153,0.3847,PHI,0.2307,0.22,,,,,,,,,False,,,,,,,
+2026-03-16,NYK,GSW,Warriors @ Knicks,0.6448,0.3552,NYK,0.2895,1.79,,,,,,,,,False,,,,,,,
+2026-03-16,SAC,UTA,Jazz @ Kings,0.4636,0.5364,UTA,0.0728,1.19,,,,,,,,,False,,,,,,,
+2026-03-16,ATL,ORL,Magic @ Hawks,0.658,0.342,ATL,0.316,1.71,,,-3.5,231.5,,,,-1.79,False,ATL,124.0,112.0,12.0,1.0,Away,0.0
+2026-03-16,WAS,GSW,Warriors @ Wizards,0.6417,0.3583,WAS,0.2835,-0.06,,,7.5,232.5,,,,7.44,False,GSW,117.0,125.0,-8.0,0.0,Home,0.0
+2026-03-16,BKN,POR,Trail Blazers @ Nets,0.5599,0.4401,BKN,0.1198,0.46,,,10.5,221.5,,,,10.96,False,POR,95.0,114.0,-19.0,0.0,Home,0.0
+2026-03-16,BOS,PHX,Suns @ Celtics,0.6033,0.3967,BOS,0.2065,-0.56,,,-8.5,213.5,,,,-9.06,False,BOS,120.0,112.0,8.0,1.0,Away,1.0
+2026-03-16,CHI,MEM,Grizzlies @ Bulls,0.4651,0.5349,MEM,0.0699,0.74,,,-5.5,243.5,,,,-4.76,False,CHI,132.0,107.0,25.0,0.0,Away,0.0
+2026-03-16,NOP,DAL,Mavericks @ Pelicans,0.5463,0.4537,NOP,0.0926,6.75,,,-8.5,240.5,,,,-1.75,False,NOP,129.0,111.0,18.0,1.0,Away,0.0
+2026-03-16,HOU,LAL,Lakers @ Rockets,0.4763,0.5237,LAL,0.0474,0.8,,,-2.5,226.5,,,,-1.7,False,LAL,92.0,100.0,-8.0,1.0,Away,1.0
+2026-03-16,LAC,SAS,Spurs @ Clippers,0.5622,0.4378,LAC,0.1244,-0.69,,,8.5,232.5,,,,7.81,False,SAS,115.0,119.0,-4.0,0.0,Home,1.0
+2026-03-17,ATL,ORL,Magic @ Hawks,0.658,0.342,ATL,0.316,1.71,,,,,,,,,False,,,,,,,
+2026-03-17,WAS,GSW,Warriors @ Wizards,0.6182,0.3818,WAS,0.2364,-0.7,,,,,,,,,False,,,,,,,
+2026-03-17,BKN,POR,Trail Blazers @ Nets,0.5534,0.4466,BKN,0.1068,0.22,,,,,,,,,False,,,,,,,
+2026-03-17,BOS,PHX,Suns @ Celtics,0.6033,0.3967,BOS,0.2065,-0.56,,,,,,,,,False,,,,,,,
+2026-03-17,CHI,MEM,Grizzlies @ Bulls,0.4651,0.5349,MEM,0.0699,0.74,,,,,,,,,False,,,,,,,
+2026-03-17,NOP,DAL,Mavericks @ Pelicans,0.5321,0.4679,NOP,0.0642,7.11,,,,,,,,,False,,,,,,,
+2026-03-17,HOU,LAL,Lakers @ Rockets,0.4712,0.5288,LAL,0.0576,0.8,,,,,,,,,False,,,,,,,
+2026-03-17,LAC,SAS,Spurs @ Clippers,0.5572,0.4428,LAC,0.1144,-0.69,,,,,,,,,False,,,,,,,
+2026-03-17,CHA,MIA,Heat @ Hornets,0.5188,0.4812,CHA,0.0376,-1.67,,,-5.5,234.5,,,,-7.17,False,,,,,,Away,
+2026-03-17,ORL,OKC,Thunder @ Magic,0.5265,0.4735,ORL,0.053,-1.75,,,9.5,222.5,,,,7.75,False,,,,,,Home,
+2026-03-17,WAS,DET,Pistons @ Wizards,0.4592,0.5408,DET,0.0816,-5.47,,,19.5,232.5,,,,14.03,False,,,,,,Home,
+2026-03-17,NYK,IND,Pacers @ Knicks,0.6002,0.3998,NYK,0.2005,4.2,,,-14.5,222.5,,,,-10.3,False,,,,,,Away,
+2026-03-17,MIL,CLE,Cavaliers @ Bucks,0.4983,0.5017,CLE,0.0035,-1.06,,,10.5,228.5,,,,9.44,False,,,,,,Home,
+2026-03-17,MIN,PHX,Suns @ Timberwolves,0.4822,0.5178,PHX,0.0357,-0.77,,,-3.5,222.5,,,,-4.27,False,,,,,,Away,
+2026-03-17,DEN,PHI,76ers @ Nuggets,0.4712,0.5288,PHI,0.0576,0.05,,,-15.5,236.5,,,,-15.45,False,,,,,,Away,
+2026-03-17,SAC,SAS,Spurs @ Kings,0.4434,0.5566,SAS,0.1133,1.53,,,13.5,235.5,,,,15.03,False,,,,,,Home,

@@ -1,0 +1,17 @@
+{
+  "winner": {
+    "accuracy": 0.74,
+    "auc_roc": 0.8274116813442656,
+    "log_loss": 0.5224931485053642,
+    "home_win_rate_actual": 0.555
+  },
+  "spread": {
+    "mae": 10.594115868359804,
+    "rmse": 13.789961888378944,
+    "avg_actual_margin": 0.905,
+    "avg_predicted_margin": 2.1623518466949463
+  },
+  "n_features": 55,
+  "train_size": 3167,
+  "val_size": 200
+}
