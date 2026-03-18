@@ -367,7 +367,7 @@ def render_spread_tab(predictions: pd.DataFrame, metrics: dict, injury_impact: d
         hurt_teams = {t: d for t, d in injury_impact.items()
                       if t in game_teams and d["missing_min_pct"] > 0.15}
         if hurt_teams:
-            st.markdown("#### 🏥 Injury Impact (Today's Games)")
+            st.markdown("#### 🏥 Injury Situation (Today's Games)")
             cols = st.columns(min(len(hurt_teams), 4))
             for i, (team, data) in enumerate(
                 sorted(hurt_teams.items(), key=lambda x: -x[1]["missing_min_pct"])[:4]

@@ -259,7 +259,7 @@ def get_injury_features() -> dict:
 
 
 if __name__ == "__main__":
-    print("NBA Predictor - Injury Impact")
+    print("NBA Predictor - Injury Situation")
     print("=" * 50)
     impact = get_injury_features()
     if not impact:
