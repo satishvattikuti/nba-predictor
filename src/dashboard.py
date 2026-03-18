@@ -29,7 +29,7 @@ from src.logger import log_predictions, load_prediction_log
 # ── Page config ──────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="NBA Game Predictor",
+    page_title="NBA Model Testing",
     page_icon="🏀",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -255,7 +255,7 @@ def _run_retrain():
 
 def render_sidebar(metrics: dict):
     with st.sidebar:
-        st.markdown("## 🏀 NBA Predictor")
+        st.markdown("## 🏀 NBA Model Testing")
         st.markdown("---")
 
         st.markdown("### Winner Model")
@@ -622,7 +622,7 @@ def render_model_stats(metrics: dict, winner_model, feature_cols):
 # ── Main ─────────────────────────────────────────────────────────────
 
 def main():
-    st.markdown('<p class="main-header">🏀 NBA Game Predictor</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-header">🏀 NBA Model Testing</p>', unsafe_allow_html=True)
     st.caption("XGBoost winner & spread predictions with ESPN odds")
 
     try:
