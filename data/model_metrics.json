@@ -1,17 +1,17 @@
 {
   "winner": {
-    "accuracy": 0.74,
-    "auc_roc": 0.8274116813442656,
-    "log_loss": 0.5224931485053642,
-    "home_win_rate_actual": 0.555
+    "accuracy": 0.7316017316017316,
+    "auc_roc": 0.8383219954648525,
+    "log_loss": 0.5228753682991194,
+    "home_win_rate_actual": 0.5454545454545454
   },
   "spread": {
-    "mae": 10.594115868359804,
-    "rmse": 13.789961888378944,
-    "avg_actual_margin": 0.905,
-    "avg_predicted_margin": 2.1623518466949463
+    "mae": 10.782736692658235,
+    "rmse": 13.873261645668036,
+    "avg_actual_margin": 1.0692640692640694,
+    "avg_predicted_margin": 1.525634765625
   },
-  "n_features": 55,
-  "train_size": 3167,
-  "val_size": 200
+  "n_features": 65,
+  "train_size": 3113,
+  "val_size": 231
 }

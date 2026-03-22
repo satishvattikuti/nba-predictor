@@ -27,12 +27,14 @@ def load_config() -> dict:
 
 
 def get_feature_columns(df: pd.DataFrame) -> list[str]:
-    """Get feature columns (home_*/away_* + elo_diff, except metadata)."""
+    """Get feature columns (home_*/away_* + differentials, except metadata)."""
     exclude = {"home_team", "away_team", "home_win", "home_pts", "away_pts", "home_margin"}
     cols = [c for c in df.columns
             if (c.startswith("home_") or c.startswith("away_")) and c not in exclude]
-    if "elo_diff" in df.columns:
-        cols.append("elo_diff")
+    # Add differential features
+    for diff_col in ["elo_diff", "season_win_diff", "net_rtg_diff"]:
+        if diff_col in df.columns:
+            cols.append(diff_col)
     return cols
 
 
@@ -61,18 +63,18 @@ def train_models(feature_matrix: pd.DataFrame) -> tuple:
     y_val_win = val_df["home_win"].astype(int)
 
     winner_model = xgb.XGBClassifier(
-        n_estimators=500,
-        max_depth=4,
+        n_estimators=800,
+        max_depth=5,
         learning_rate=0.05,
         subsample=0.8,
-        colsample_bytree=0.7,
-        reg_alpha=1.0,
-        reg_lambda=2.0,
-        min_child_weight=5,
-        gamma=0.1,
+        colsample_bytree=0.8,
+        reg_alpha=0.5,
+        reg_lambda=1.0,
+        min_child_weight=3,
+        gamma=0.05,
         objective="binary:logistic",
         eval_metric="logloss",
-        early_stopping_rounds=30,
+        early_stopping_rounds=50,
         random_state=42,
         n_jobs=-1,
     )
@@ -98,18 +100,18 @@ def train_models(feature_matrix: pd.DataFrame) -> tuple:
     y_val_margin = val_df["home_margin"].astype(float)
 
     spread_model = xgb.XGBRegressor(
-        n_estimators=500,
-        max_depth=4,
+        n_estimators=800,
+        max_depth=6,
         learning_rate=0.05,
         subsample=0.8,
-        colsample_bytree=0.7,
-        reg_alpha=1.0,
-        reg_lambda=2.0,
-        min_child_weight=5,
-        gamma=0.1,
+        colsample_bytree=0.8,
+        reg_alpha=0.3,
+        reg_lambda=1.0,
+        min_child_weight=3,
+        gamma=0.05,
         objective="reg:squarederror",
-        eval_metric="mae",
-        early_stopping_rounds=30,
+        eval_metric="rmse",
+        early_stopping_rounds=50,
         random_state=42,
         n_jobs=-1,
     )

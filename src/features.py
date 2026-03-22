@@ -116,6 +116,36 @@ def compute_rolling_features(game_logs: pd.DataFrame, window: int = 10) -> pd.Da
         .transform(lambda x: _compute_streak(x).shift(1))
     )
 
+    # Season win% (expanding — captures overall team caliber)
+    df["season_win_pct"] = (
+        df.groupby(team_col)["WIN"]
+        .transform(lambda x: x.shift(1).expanding(min_periods=10).mean())
+    )
+
+    # Net rating (rolling pts scored - pts allowed per game)
+    if "PLUS_MINUS" in df.columns:
+        df["roll_net_rtg"] = (
+            df.groupby(team_col)["PLUS_MINUS"]
+            .transform(lambda x: x.shift(1).rolling(window, min_periods=5).mean())
+        )
+
+    # Margin volatility (std of plus_minus — captures blowout-prone teams)
+    if "PLUS_MINUS" in df.columns:
+        df["margin_volatility"] = (
+            df.groupby(team_col)["PLUS_MINUS"]
+            .transform(lambda x: x.shift(1).rolling(window, min_periods=5).std())
+        )
+
+    # Momentum (recent 5 vs prior 5 plus_minus avg)
+    if "PLUS_MINUS" in df.columns:
+        recent_5 = df.groupby(team_col)["PLUS_MINUS"].transform(
+            lambda x: x.shift(1).rolling(5, min_periods=3).mean()
+        )
+        prior_5 = df.groupby(team_col)["PLUS_MINUS"].transform(
+            lambda x: x.shift(6).rolling(5, min_periods=3).mean()
+        )
+        df["momentum"] = recent_5 - prior_5
+
     return df
 
 
@@ -285,7 +315,8 @@ def _build_matrix_from_logs(all_logs: pd.DataFrame) -> pd.DataFrame:
     # Feature columns
     roll_cols = [c for c in all_logs.columns if c.startswith("roll_")]
     venue_cols = [c for c in all_logs.columns if c.startswith("venue_")]
-    extra_cols = ["days_rest", "is_b2b", "streak", "elo"]
+    extra_cols = ["days_rest", "is_b2b", "streak", "elo",
+                  "season_win_pct", "margin_volatility", "momentum"]
     adv_cols = [c for c in all_logs.columns if c.startswith("adv_")]
     team_features = roll_cols + venue_cols + extra_cols + adv_cols
     team_features = [f for f in team_features if f in all_logs.columns]
@@ -329,6 +360,12 @@ def _build_matrix_from_logs(all_logs: pd.DataFrame) -> pd.DataFrame:
     # Elo differential
     if "home_elo" in matrix.columns and "away_elo" in matrix.columns:
         matrix["elo_diff"] = matrix["home_elo"] - matrix["away_elo"]
+
+    # Team quality differentials — key for big spread games
+    if "home_season_win_pct" in matrix.columns and "away_season_win_pct" in matrix.columns:
+        matrix["season_win_diff"] = matrix["home_season_win_pct"] - matrix["away_season_win_pct"]
+    if "home_roll_net_rtg" in matrix.columns and "away_roll_net_rtg" in matrix.columns:
+        matrix["net_rtg_diff"] = matrix["home_roll_net_rtg"] - matrix["away_roll_net_rtg"]
 
     # Home margin (for spread model)
     matrix["home_margin"] = matrix["home_pts"] - matrix["away_pts"]
@@ -385,116 +422,38 @@ def _merge_adv_single(logs: pd.DataFrame, adv_df: pd.DataFrame) -> pd.DataFrame:
 def build_today_features(today_schedule: pd.DataFrame,
                           game_logs: pd.DataFrame,
                           adv_stats: pd.DataFrame = None) -> pd.DataFrame:
-    """Build features for today's games using latest rolling stats."""
+    """Build features for today's games using the SAME functions as training.
+
+    This eliminates train/serve skew by reusing compute_rolling_features(),
+    compute_rest_features(), compute_venue_splits(), and compute_elo().
+    """
     config = load_config()
     window = config["rolling_window"]
 
     df = game_logs.copy()
+    df = _merge_adv_single(df, adv_stats)
+
+    # Reuse the exact same feature computation pipeline as training
+    df = compute_rolling_features(df, window)
+    df = compute_rest_features(df)
+    df = compute_venue_splits(df, window)
+    df, current_elo = compute_elo(df)
+
+    # Identify feature columns (same logic as _build_matrix_from_logs)
+    roll_cols = [c for c in df.columns if c.startswith("roll_")]
+    venue_cols = [c for c in df.columns if c.startswith("venue_")]
+    extra_cols = ["days_rest", "is_b2b", "streak", "elo",
+                  "season_win_pct", "margin_volatility", "momentum"]
+    adv_cols = [c for c in df.columns if c.startswith("adv_")]
+    team_features = roll_cols + venue_cols + extra_cols + adv_cols
+    team_features = [f for f in team_features if f in df.columns]
+
+    # Get last row per team (already has shift(1) applied — no leakage)
     df["GAME_DATE"] = pd.to_datetime(df["GAME_DATE"])
     df = df.sort_values(["TEAM_ABBREVIATION", "GAME_DATE"])
+    latest = df.groupby("TEAM_ABBREVIATION").last()
 
-    # Get latest stats per team
-    latest = {}
-    for team in df["TEAM_ABBREVIATION"].unique():
-        team_df = df[df["TEAM_ABBREVIATION"] == team].tail(window)
-        if team_df.empty:
-            continue
-
-        stats = {
-            "roll_pts": team_df["PTS"].mean() if "PTS" in team_df else 0,
-            "roll_reb": team_df["REB"].mean() if "REB" in team_df else 0,
-            "roll_ast": team_df["AST"].mean() if "AST" in team_df else 0,
-            "roll_tov": team_df["TOV"].mean() if "TOV" in team_df else 0,
-            "roll_stl": team_df["STL"].mean() if "STL" in team_df else 0,
-            "roll_blk": team_df["BLK"].mean() if "BLK" in team_df else 0,
-            "roll_win_pct": team_df["WIN"].mean(),
-            "roll_plus_minus": team_df["PLUS_MINUS"].mean() if "PLUS_MINUS" in team_df else 0,
-        }
-
-        # Points allowed
-        if "PLUS_MINUS" in team_df.columns and "PTS" in team_df.columns:
-            stats["roll_pts_allowed"] = (team_df["PTS"] - team_df["PLUS_MINUS"]).mean()
-
-        # eFG%
-        if all(c in team_df.columns for c in ["FGM", "FG3M", "FGA"]):
-            fga = team_df["FGA"].sum()
-            if fga > 0:
-                stats["roll_efg"] = (team_df["FGM"].sum() + 0.5 * team_df["FG3M"].sum()) / fga
-
-        # TS%
-        if all(c in team_df.columns for c in ["PTS", "FGA", "FTA"]):
-            denom = 2 * (team_df["FGA"].sum() + 0.44 * team_df["FTA"].sum())
-            if denom > 0:
-                stats["roll_ts"] = team_df["PTS"].sum() / denom
-
-        # TOV rate
-        if all(c in team_df.columns for c in ["TOV", "FGA", "FTA"]):
-            denom = team_df["FGA"].sum() + 0.44 * team_df["FTA"].sum() + team_df["TOV"].sum()
-            if denom > 0:
-                stats["roll_tov_rate"] = team_df["TOV"].sum() / denom
-
-        # 3PT
-        if "FG3A" in team_df.columns and "FGA" in team_df.columns:
-            fga = team_df["FGA"].sum()
-            if fga > 0:
-                stats["roll_fg3_rate"] = team_df["FG3A"].sum() / fga
-        if "FG3_PCT" in team_df.columns:
-            stats["roll_fg3_pct"] = team_df["FG3_PCT"].mean()
-
-        # Streak
-        wins = team_df["WIN"].values
-        streak = 0
-        for w in wins:
-            streak = max(1, streak + 1) if w == 1 else min(-1, streak - 1)
-        stats["streak"] = streak
-
-        # Days rest
-        last_game = team_df["GAME_DATE"].max()
-        stats["days_rest"] = max(0, min(7, (pd.Timestamp.now() - last_game).days))
-        stats["is_b2b"] = 1 if stats["days_rest"] <= 1 else 0
-
-        # Venue splits — stored per venue context, mapped correctly in row building below
-        full_team = df[df["TEAM_ABBREVIATION"] == team]
-        home_games = full_team[full_team["is_home"] == 1].tail(window)
-        away_games = full_team[full_team["is_home"] == 0].tail(window)
-        venue_stats = {}
-        if len(home_games) >= 3:
-            venue_stats["home"] = {
-                "venue_pts": home_games["PTS"].mean(),
-                "venue_win_pct": home_games["WIN"].mean(),
-                "venue_plus_minus": home_games["PLUS_MINUS"].mean() if "PLUS_MINUS" in home_games else 0,
-            }
-        if len(away_games) >= 3:
-            venue_stats["away"] = {
-                "venue_pts": away_games["PTS"].mean(),
-                "venue_win_pct": away_games["WIN"].mean(),
-                "venue_plus_minus": away_games["PLUS_MINUS"].mean() if "PLUS_MINUS" in away_games else 0,
-            }
-        stats["_venue"] = venue_stats
-
-        latest[team] = stats
-
-    # Compute current Elo ratings from full season
-    _, current_elo = compute_elo(df)
-
-    # Merge advanced stats
-    adv_map = {}
-    if adv_stats is not None and not adv_stats.empty:
-        adv_col_map = {
-            "E_OFF_RATING": "adv_off_rtg", "E_DEF_RATING": "adv_def_rtg",
-            "E_NET_RATING": "adv_net_rtg", "E_PACE": "adv_pace",
-            "E_AST_RATIO": "adv_ast_ratio", "E_REB_PCT": "adv_reb_pct",
-        }
-        for _, row in adv_stats.iterrows():
-            team = row.get("TEAM_ABBREVIATION", "")
-            team = _NBA_API_ABBREV_FIXES.get(team, team) if hasattr(row, '__getitem__') else team
-            stats = {}
-            for src, dst in adv_col_map.items():
-                if src in adv_stats.columns:
-                    stats[dst] = pd.to_numeric(row.get(src, 0), errors="coerce")
-            adv_map[team] = stats
-
-    # Build rows
+    # Build rows for each game
     rows = []
     for _, game in today_schedule.iterrows():
         home = game["home_team"]
@@ -502,19 +461,14 @@ def build_today_features(today_schedule: pd.DataFrame,
         row = {"home_team": home, "away_team": away, "is_demo": game.get("is_demo", False)}
 
         for prefix, team in [("home", home), ("away", away)]:
-            team_stats = latest.get(team, {})
-            for k, v in team_stats.items():
-                if k == "_venue":
-                    # Map venue splits: home team gets their home venue stats, away gets away
-                    venue = v.get(prefix, {})
-                    for vk, vv in venue.items():
-                        row[f"{prefix}_{vk}"] = vv
-                else:
-                    row[f"{prefix}_{k}"] = v
-            # Advanced
-            team_adv = adv_map.get(team, {})
-            for k, v in team_adv.items():
-                row[f"{prefix}_{k}"] = v
+            if team in latest.index:
+                team_row = latest.loc[team]
+                for feat in team_features:
+                    val = team_row.get(feat, np.nan)
+                    row[f"{prefix}_{feat}"] = val
+            else:
+                for feat in team_features:
+                    row[f"{prefix}_{feat}"] = 0.0
 
         # Elo ratings
         home_elo = current_elo.get(home, 1500)
@@ -522,6 +476,16 @@ def build_today_features(today_schedule: pd.DataFrame,
         row["home_elo"] = home_elo
         row["away_elo"] = away_elo
         row["elo_diff"] = home_elo - away_elo
+
+        # Team quality differentials
+        if f"home_season_win_pct" in row and f"away_season_win_pct" in row:
+            h_swp = row.get("home_season_win_pct", 0.5) or 0.5
+            a_swp = row.get("away_season_win_pct", 0.5) or 0.5
+            row["season_win_diff"] = h_swp - a_swp
+        if f"home_roll_net_rtg" in row and f"away_roll_net_rtg" in row:
+            h_nrt = row.get("home_roll_net_rtg", 0) or 0
+            a_nrt = row.get("away_roll_net_rtg", 0) or 0
+            row["net_rtg_diff"] = h_nrt - a_nrt
 
         rows.append(row)
 
